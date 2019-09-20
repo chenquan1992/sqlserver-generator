@@ -1,0 +1,20 @@
+package ${package}.mapper;
+
+import java.util.List;
+import com.platform.entity.${className};
+import com.platform.utils.MyMapper;
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Mapper extends MyMapper<${className}> {
+
+    /**
+    * 根据条件查询，主键倒序排序
+    */
+    List<${className}> selectByQuery(${className} ${classname});
+
+}

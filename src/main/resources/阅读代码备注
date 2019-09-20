@@ -1,0 +1,4 @@
+方便下次使用：
+1、先修改 application.yml 配置文件的MySQL设置
+2、需要生成代码则必须改 generator.properties 的配置
+3、模板里面的包名全都要改，配置文件的包名

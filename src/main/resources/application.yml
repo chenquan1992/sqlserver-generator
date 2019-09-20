@@ -1,0 +1,38 @@
+# Tomcat
+server:
+    tomcat:
+        max-threads: 10
+        min-spare-threads: 10
+    port: 7777
+
+# mysql
+spring:
+    datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+#        mysql
+#        driverClassName: com.mysql.jdbc.Driver
+##        url: jdbc:mysql://192.168.3.3:3306/cq_test_db?useUnicode=true&characterEncoding=UTF-8
+#        url: jdbc:mysql://localhost:3306/cq_test_db?useUnicode=true&characterEncoding=UTF-8
+#        username: root
+#        password: 123456
+
+#        SQL server
+        driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+#        url: jdbc:mysql://192.168.3.3:3306/cq_test_db?useUnicode=true&characterEncoding=UTF-8
+        url: jdbc:sqlserver://192.168.3.3:3588;DatabaseName=updatetest
+        username: sa
+        password: 12345
+    jackson:
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+    thymeleaf:
+        mode: LEGACYHTML5
+        cache: false
+
+# Mybatis配置
+mybatis:
+    mapperLocations: classpath:mapper/**/*.xml
+logging:
+    level:
+        com.github.wxiaoqi.security.generator.mapper : debug
+

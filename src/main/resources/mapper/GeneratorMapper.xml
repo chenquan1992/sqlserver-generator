@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.wxiaoqi.security.generator.mapper.GeneratorMapper">
+	<select id="queryList" resultType="map">
+		SELECT DISTINCT
+		d.name tableName,
+		CONVERT(varchar(500), f.value) tableComment,
+		d.crdate createTime
+		FROM
+		syscolumns a
+		LEFT JOIN systypes b ON a.xusertype= b.xusertype
+		INNER JOIN sysobjects d ON a.id= d.id
+		AND d.xtype= 'U'
+		AND d.name&lt;&gt; 'dtproperties'
+		LEFT JOIN syscomments e ON a.cdefault= e.id
+		LEFT JOIN sys.extended_properties g ON a.id= G.major_id
+		AND a.colid= g.minor_id
+		LEFT JOIN sys.extended_properties f ON d.id= f.major_id
+		AND f.minor_id= 0
+		<where>
+			<if test="tableName != null and tableName.trim() != ''">
+				and d.name = #{tableName}
+			</if>
+		</where>
+		order by d.crdate desc
+		<if test="offset != null and limit != null">
+			offset (#{offset}) rows fetch next #{limit} rows only
+		</if>
+	</select>
+	
+	<select id="queryTotal" resultType="int">
+		SELECT DISTINCT
+			COUNT(DISTINCT d.name )
+		FROM
+		syscolumns a
+		LEFT JOIN systypes b ON a.xusertype= b.xusertype
+		INNER JOIN sysobjects d ON a.id= d.id
+		AND d.xtype= 'U'
+		AND d.name&lt;&gt; 'dtproperties'
+		LEFT JOIN syscomments e ON a.cdefault= e.id
+		LEFT JOIN sys.extended_properties g ON a.id= G.major_id
+		AND a.colid= g.minor_id
+		LEFT JOIN sys.extended_properties f ON d.id= f.major_id
+		AND f.minor_id= 0
+		<where>
+			<if test="tableName != null and tableName.trim() != ''">
+				and d.name = #{tableName}
+			</if>
+		</where>
+	</select> 
+	
+	<select id="queryTable" resultType="map">
+		SELECT DISTINCT
+		d.name tableName,
+		CONVERT(varchar(200), f.value) tableComment,
+		d.crdate createTime
+		FROM
+		syscolumns a
+		LEFT JOIN systypes b ON a.xusertype= b.xusertype
+		INNER JOIN sysobjects d ON a.id= d.id
+		AND d.xtype= 'U'
+		AND d.name&lt;&gt; 'dtproperties'
+		LEFT JOIN syscomments e ON a.cdefault= e.id
+		LEFT JOIN sys.extended_properties g ON a.id= G.major_id
+		AND a.colid= g.minor_id
+		LEFT JOIN sys.extended_properties f ON d.id= f.major_id
+		AND f.minor_id= 0
+		where d.name = #{tableName}
+	</select> 
+	
+	<select id="queryColumns" resultType="map">
+		SELECT
+			 C.name as [columnName]
+			 ,T.name as [dataType]
+			 ,convert(bit,case when exists(SELECT 1 FROM sysobjects where xtype='PK' and parent_obj=c.id and name in (
+				 SELECT name FROM sysindexes WHERE indid in(
+					 SELECT indid FROM sysindexkeys WHERE id = c.id AND colid=c.colid))) then 1 else 0 end)
+						 as [isPriKey]
+			 ,CONVERT(varchar(500), isnull(ETP.value,'')) columnComment
+		FROM syscolumns C
+		INNER JOIN systypes T ON C.xusertype = T.xusertype
+		left JOIN sys.extended_properties ETP   ON  ETP.major_id = c.id AND ETP.minor_id = C.colid AND ETP.name ='MS_Description'
+		left join syscomments CM on C.cdefault=CM.id
+		WHERE C.id = object_id(#{tableName})
+	</select>
+</mapper>

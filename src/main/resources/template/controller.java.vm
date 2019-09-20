@@ -1,0 +1,39 @@
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RestController
+@RequestMapping("/sys/${classname}")
+@Api(value = "${className}-controller", tags = "相关接口")
+public class ${className}Controller {
+
+    @Autowired
+        ${className}Service ${classname}Service;
+
+    @PostMapping(value = "/addOrUpdate${className}", produces = "application/json; charset=utf-8")
+    @ApiOperation(value = "添加或修改", notes = "添加或修改", response = R.class)
+    public R addOrUpdate${className}(@RequestBody @Valid ${className} ${classname}) {
+        return ${classname}Service.addOrUpdate${className}(${classname});
+    }
+
+    @PostMapping(value = "/get${className}ListPage")
+    @ApiOperation(value = "分页按条件查询列表", notes = "分页按条件查询列表", response = ${className}.class)
+    public R get${className}ListPage(@RequestBody ${className} ${classname}) {
+        return ${classname}Service.get${className}ListPage(${classname});
+    }
+
+    @GetMapping(value = "/del${className}/{id}")
+    @ApiOperation(value = "删除记录", notes = "删除记录", response = R.class)
+    public R del${className}(@PathVariable Long id) {
+        return ${classname}Service.del${className}(id);
+    }
+
+    @GetMapping(value = "/edit${className}Status/{id}/{status}")
+    @ApiOperation(value = "修改状态", notes = "修改状态", response = R.class)
+    public R edit${className}Status(@PathVariable Long id,@PathVariable Integer status) {
+        return ${classname}Service.edit${className}Status(id,status);
+    }
+
+
+
+}

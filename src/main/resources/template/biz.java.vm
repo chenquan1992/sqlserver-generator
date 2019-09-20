@@ -1,0 +1,97 @@
+
+import java.util.Date;
+import org.springframework.stereotype.Service;
+
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Service
+public class ${className}Service {
+
+    @Autowired
+        ${className}Mapper ${classname}Mapper;
+
+    /**
+        * 陈铨新增：添加或修改
+         * @Date ${datetime}
+        */
+    @Transactional
+    public R addOrUpdate${className}(${className} ${classname}) {
+        int success = 0;
+        R result = R.error();
+
+        if (${classname}.getId() != null){//编辑
+            ${classname}.setUpdatedTime(new Date());
+            success = ${classname}Mapper.updateByPrimaryKeySelective(${classname});
+        }else{//新增
+            ${classname}.setCreatedTime(new Date());
+            success = ${classname}Mapper.insertSelective(${classname});
+        }
+
+        if (success > 0){
+            result = R.ok();
+        }
+
+        return result;
+    }
+
+    /**
+     * 陈铨新增：分页按条件查询列表
+     * @Date ${datetime}
+     */
+    public R get${className}ListPage(${className} ${classname}) {
+        PageHelper.startPage(${classname}.getPage(), ${classname}.getRows());
+        List<${className}> ${classname}List = ${classname}Mapper.selectByQuery(${classname});
+        PageInfo pageInfo = new PageInfo(${classname}List);
+        return R.ok(pageInfo);
+    }
+
+    /**
+     * 陈铨新增：删除记录
+     * @Date ${datetime}
+     */
+    @Transactional
+    public R del${className}( Long id) {
+
+        int success = 0;
+        R result = R.error();
+        ${className} ${classname} = new ${className}();
+        ${classname}.setId(id);
+
+            success = ${classname}Mapper.delete(${classname});
+
+        if (success > 0){
+            result = R.ok();
+        }
+        return result;
+    }
+
+    /**
+     * 陈铨新增：修改状态
+     * @Date ${datetime}
+     */
+    @Transactional
+    public R edit${className}Status(  Long id, Integer status) {
+
+        int success = 0;
+        R result = R.error();
+        ${className} ${classname} = new ${className}();
+        ${classname}.setId(id);
+        ${classname}.setStatus(status);
+
+        success = ${classname}Mapper.updateByPrimaryKeySelective(${classname});
+
+        if (success > 0){
+            result = R.ok();
+        }
+        return R.ok(result);
+    }
+
+
+
+}
