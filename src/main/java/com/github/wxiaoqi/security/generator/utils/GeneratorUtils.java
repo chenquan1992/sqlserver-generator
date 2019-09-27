@@ -171,11 +171,13 @@ public class GeneratorUtils {
         }
 
         if (template.contains("index.js.vm")) {
-            return frontPath + "api" + File.separator + moduleName + File.separator + toLowerCaseFirstOne(className) + File.separator + "index.js";
+            return frontPath + File.separator + className + ".js";
+//            return frontPath + "api" + File.separator + moduleName + File.separator + toLowerCaseFirstOne(className) + File.separator + "index.js";
         }
 
         if (template.contains("index.vue.vm")) {
-            return frontPath + "views" + File.separator + moduleName + File.separator + toLowerCaseFirstOne(className) + File.separator + "index.vue";
+            return frontPath + File.separator + className + ".html";
+//            return frontPath + "views" + File.separator + moduleName + File.separator + toLowerCaseFirstOne(className) + File.separator + "index.vue";
         }
 
         if (template.contains("biz.java.vm")) {

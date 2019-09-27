@@ -1,39 +1,203 @@
-import fetch from 'utils/fetch';
+let vm = new Vue({
+    el: '#rrapp',
+    data: {
+        columns1: [
+            #foreach($column in $columns)
+                {
+                    title: '${column.comments}',
+                    key: '${column.attrname}'
+                },
+            #end
+            {
+                title: '启用状态',
+                key: 'rechargeStatus',
+                render: (h, params) => {
+                return h('div', [
+                        h('tag', {
+                            style: {
+                                backgroundColor: params.row.rechargeStatus == 0 ? '#ED4014' : '#19BE6B',
+                                color: 'white'
+                            }
+                        }, params.row.rechargeStatus == 0 ? '未启用' : '启用'),
+                    ]
+                )
+            }
+    },
+{
+    title: '操作',
+        key: 'action',
+    render: (h, params) => {
+    return h('div', [
+        h('i-button', {
+            props: {
+                type: 'primary'
+            },
+            style: {},
+            on: {
+                click: () => {
+                vm.edit(params.row);
+}
+}
 
-export function page(query) {
-return fetch({
-url: '/api/${moduleName}/${secondModuleName}/page',
-method: 'get',
-params: query
+}, '编辑'),
+    h('i-button', {
+        props: {
+            type: 'error'
+        },
+        style: {
+            marginRight: '10px',
+            marginLeft: '10px'
+        },
+        on: {
+            click: () => {
+            vm.delete(params.row.rechargeId);
+}
+}
+
+}, '删除'),
+    h('i-button', {
+        props: {
+            type: params.row.status == 0 ? 'success' : 'warning'
+        },
+        style: {},
+        on: {
+            click: () => {
+            let status = params.row.status == 0 ? 1 : 0;
+    vm.editStatus(params.row.frId,status);
+}
+}
+}, params.row.status == 0 ? '启用' : '禁用')
+]
+)
+}
+}
+],
+data1: [],
+    total: 20,
+    queryPage: {
+    page: 1,
+        rows: 10
+},
+pageOpts: [10, 30, 50],
+    modal1: false,
+    modal1title: "",
+    formData: {
+    #foreach($column in $columns)
+        ${column.attrname}:"", // ${column.comments}
+    #end
+},
+ruleValidate: {
+    #foreach($column in $columns)
+        ${column.attrname}: [
+            {required: true, message: '请输入具体的${column.comments}', trigger: 'blur'}
+        ],
+    #end
+
+},
+},
+methods: {
+    // 新增
+    add(){
+        this.modal1title = "新增";
+        this.modal1 = true;
+    },
+    // 新增或编辑确认
+    ok() {
+        this.\$refs
+            .formData.validate((valid) => {
+            if (valid) {
+                let that = this;
+                let params = that.formData;
+                Ajax.request({
+                    url: '../sys/${classname}/addOrUpdate${className}',
+                    type: 'POST',
+                    params: JSON.stringify(params),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    successCallback(res) {
+                        that.getListData();
+                        that.cancel();
+                        that.modal1 = false;
+                    }
+                })
+            }else {
+                return false;
+            }
+        });
+    },
+    // 关闭界面清空数据、清除校验
+    cancel() {
+        this.formData = Object.assign({}, this.defaultData);
+        this.$refs.formData.resetFields();
+        this.modal1 = false;
+    },
+    // 获取列表数据
+    getListData() {
+        let that = this;
+        Ajax.request({
+            url: '../sys/${classname}/get${className}ListPage',
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            params: JSON.stringify(that.queryPage),
+            successCallback(res) {
+                that.data1 = res.data.list;
+                that.total = res.data.total;
+            }
+        })
+    },
+    handlePage(v) {
+        this.queryPage.page = v;
+        this.getListData();
+    },
+    handleSize(v) {
+        this.queryPage.rows = v;
+        this.getListData();
+    },
+    // 修改状态
+    editStatus(id,status) {
+        let that = this;
+        Ajax.request({
+            url: '../sys/${classname}/edit${className}Status/'+id+'/'+status,
+            type: 'GET',
+            contentType: 'application/json',
+            successCallback(res) {
+                that.getListData();
+            }
+        })
+    },
+    // 删除
+    delete(v) {
+        let that = this;
+        ## 记得 \$Modal 后面要加换行符就行了,就是回车一下，生成之后有问题需要改回来
+        this.\$Modal
+            .confirm({
+            title: '警告',
+            content: '<p>确认删除吗？</p>',
+            onOk: () => {
+                Ajax.request({
+                    url: '../sys/${classname}/del${className}/'+v,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    successCallback(res) {
+                        that.getListData();
+                    }
+                })
+            },
+            onCancel: () => {
+                return false;
+            }
+        });
+    },
+    // 编辑
+    edit(row) {
+        this.formData = Object.assign({}, row);
+        this.modal1 = true;
+        this.modal1title = "编辑";
+    },
+},
+// 第一次进来渲染数据
+mounted() {
+    this.getListData();
+},
 });
-}
-
-export function addObj(obj) {
-return fetch({
-url: '/api/${moduleName}/${secondModuleName}',
-method: 'post',
-data: obj
-});
-}
-
-export function getObj(id) {
-return fetch({
-url: '/api/${moduleName}/${secondModuleName}/' + id,
-method: 'get'
-})
-}
-
-export function delObj(id) {
-return fetch({
-url: '/api/${moduleName}/${secondModuleName}/' + id,
-method: 'delete'
-})
-}
-
-export function putObj(id, obj) {
-return fetch({
-url: '/api/${moduleName}/${secondModuleName}/' + id,
-method: 'put',
-data: obj
-})
-}
